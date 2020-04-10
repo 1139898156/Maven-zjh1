@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ysd.mapper.userMapper">
+
+	<select id="getAllusers" resultType="com.ysd.entity.user">
+		select * from users where 1=1
+		<if test="LoginName!=''">
+			<if test="LoginName!=null">
+				and LoginName like "%"#{LoginName}"%"
+			</if>
+		</if>
+		<if test="beginDate!='' and endDate!=''">
+			<if test="beginDate!=null and endDate!=null">
+				and CreateTime between #{beginDate} and #{endDate}
+			</if>
+		</if>
+		<if test="IsLockout!=''">
+			<if test="IsLockout!=null">
+				and IsLockout = #{IsLockout}
+			</if>
+		</if>
+		ORDER BY Id limit #{page},#{limit}
+	</select>
+
+	<!--查询数据库的信息条数 -->
+	<select id="getCount" resultType="int">
+		select count(*) from users where 1=1
+		<if
+			test="LoginName!='' and beginDate!='' and endDate!='' and IsLockout!=''">
+			<if test="LoginName!=null">
+				and LoginName like "%"#{LoginName}"%"
+			</if>
+			<if test="beginDate!=null">
+				and CreateTime &gt; #{beginDate}
+			</if>
+			<if test="endDate!=null">
+				and LastLoginTime &lt; #{endDate}
+			</if>
+			<if test="IsLockout!=null">
+				and IsLockout = #{IsLockout}
+			</if>
+		</if>
+	</select>
+	<!-- 添加数据 -->
+	<insert id="addUser" parameterType="com.ysd.entity.user">
+		INSERT
+		INTO users(Id,LoginName,Password,IsLockout)
+		VALUES(#{Id},#{LoginName},#{Password},#{IsLockout})
+	</insert>
+
+	<!-- 删除数据 -->
+	<delete id="deleteUser" parameterType="com.ysd.entity.user">
+		DELETE FROM users WHERE Id
+		= #{Id}
+	</delete>
+	<!-- 删除数据判断 -->
+	<select id="delUserByRol" resultType="com.ysd.entity.roles">
+		SELECT * from roles where Id=(
+		select RoleId from userroles where UserId =
+		(select Id from users where Id =#{Id}))
+	</select>
+
+	<!--重置密码 -->
+	<update id="newPass" parameterType="com.ysd.entity.user">
+		UPDATE users set `Password` =
+		'ysd123' where Id= #{Id}
+	</update>
+
+	<!--修改 -->
+	<update id="udUser" parameterType="com.ysd.entity.user">
+		UPDATE users set LoginName
+		=#{LoginName} , IsLockout= #{IsLockout} ,
+		`Password` = #{Password}
+		where Id= #{Id}
+	</update>
+	<!-- 锁定用户 -->
+	<update id="block" parameterType="com.ysd.entity.user">
+		UPDATE users set `IsLockout` =
+		'是' where Id= #{Id}
+	</update>
+	<!-- 解锁用户 -->
+	<update id="unblock" parameterType="com.ysd.entity.user">
+		UPDATE users set `IsLockout`
+		= '否' where Id= #{Id}
+	</update>
+
+	<!--查询所有roles -->
+	<select id="getRolesAll" resultType="com.ysd.entity.roles">
+		select name from roles
+	</select>
+	
+	<!--穿梭框，uuid()   自动生成32字节的数据-->
+	<insert id="CreateUser">
+		insert into users(Id,LoginName, PassWord, ProtectEMail, ProtectMTel)
+		values(uuid(),#{LoginName},#{PassWord},#{ProtectMTel},#{ProtectEMail});
+	</insert>
+	
+	<!-- 登录判断 -->
+	<select id="loginUser" resultType="com.ysd.entity.user">
+		SELECT * from users where LoginName=#{LoginName} and Password =#{Password}
+	</select>
+	
+	<!--更新登录时间 -->
+	<update id="newLoginTime" >
+		UPDATE users set LastLoginTime = #{LastLoginTime} 
+		where Id= #{Id}
+	</update>
+</mapper>

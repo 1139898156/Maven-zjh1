@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ysd.mapper.rolesMapperB">
+
+	<select id="getAllroles" resultType="com.ysd.entity.roles">
+		select * from roles ORDER BY Id limit #{page},#{limit}
+	</select>
+
+	<!--查询数据库的信息条数 -->
+	<select id="getCount" resultType="int">
+		select count(*) from roles 
+	</select>
+	<!-- 添加数据 -->
+	<insert id="addRoles" parameterType="com.ysd.entity.roles" >
+	INSERT INTO roles(Id,Name) VALUES(#{Id},#{Name})
+	</insert>
+
+	<!-- 删除数据 -->
+	<delete id="deleteRoles" parameterType="com.ysd.entity.roles">
+		DELETE FROM roles WHERE Id = #{Id}
+	</delete>
+	
+	<!--修改 -->
+	<update id="udRoles" parameterType="com.ysd.entity.roles">
+		UPDATE roles set Name =#{Name} where Id= #{Id}
+	</update>
+
+</mapper>

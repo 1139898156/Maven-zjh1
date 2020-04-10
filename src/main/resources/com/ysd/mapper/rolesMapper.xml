@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ysd.mapper.rolesMapper">
+
+	<!--查询所有roles -->
+	<select id="getRolesAll" resultType="com.ysd.entity.roles">
+		select * from roles
+	</select>
+
+
+	<!--根据ID查询roles -->
+	<select id="getRolesById" resultType="com.ysd.entity.roles">
+		SELECT c.* from users a
+		INNER JOIN userroles b on a.Id = b.UserId
+		INNER JOIN roles c on b.RoleId=c.Id WHERE a.Id=#{UserId}
+	</select>
+	<!--修改用户权限 -->
+	<insert id="addRoles">
+		insert into userroles values(uuid(),#{UserId},#{RoleId})
+	</insert>
+
+	<!--移除用户权限 -->
+	<delete id="delRoles">
+		delete from userroles where UserId=#{UserId} and RoleId=#{RoleId}
+	</delete>
+
+	<!--穿梭框 -->
+
+	<!--查询所有信息 -->
+	<select id="getModulesAll" resultType="com.ysd.entity.modules">
+		select * from modules
+	</select>
+	<!--根据ID查询rolemodules -->
+	<select id="getModulesById" resultType="com.ysd.entity.modules">
+		SELECT a.* from
+		modules a INNER JOIN rolemodules b ON a.Id = b.ModuleId
+		WHERE b.RoleId=#{RoleId}
+	</select>
+	<!--添加用户角色 -->
+	<insert id="addModules">
+		insert into rolemodules(Id,RoleId,ModuleId)
+		values(uuid(),#{RoleId},#{ModuleId});
+	</insert>
+	<!--删除用户角色 -->
+	<delete id="delModules">
+		delete from rolemodules where ModuleId=#{ModuleId} and RoleId=#{RoleId}
+	</delete>
+
+
+
+	<!--动态mul -->
+	<select id="getRoleIdByUserID" resultType="com.ysd.entity.roles">
+		SELECT a.Id from roles a
+		where a.Id=(
+		SELECT b.RoleId FROM userroles b
+		WHERE b.UserId=#{UserId}
+		)
+	</select>
+	<!--查询所有信息 -->
+	<select id="GetSysRightsJsonLayUI"
+		resultType="com.ysd.entity.modules">
+		SELECT a.* from modules a WHERE a.Id in (
+		SELECT b.ModuleId FROM rolemodules
+		b
+		WHERE b.RoleId = #{token}
+		)
+	</select>
+</mapper>

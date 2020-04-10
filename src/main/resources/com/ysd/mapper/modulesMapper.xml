@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ysd.mapper.modulesMapper">
+	
+		<!--查询所有信息  -->
+	<select id="getAllModules" resultType="com.ysd.entity.modules">
+		select * from modules
+	</select>
+		<!--Id查询所有信息  -->
+	<select id="getModulesById" resultType="com.ysd.entity.modules">
+		select * from modules where 
+		<if test="Id!=null">
+			Id=#{id}
+		</if>
+	</select>
+		<!--添加信息  -->
+	<insert id="addModulesById">
+		insert into modules (Name,ParentId,Path,Weight)
+		values(#{Name},#{ParentId},#{Path},#{Weight})
+	</insert>
+		<!--删除信息  -->
+	<delete id="deleteModulesById">
+		DELETE FROM modules where 
+		<if test="Id!=null">
+			Id=#{Id}
+		</if>
+	</delete>
+		<!--修改信息  -->
+	<update id="udModulesById">
+		update modules set Name=#{Name} where
+		<if test="Id!=null">
+			Id=#{Id}
+		</if>
+	</update>
+
+</mapper> 

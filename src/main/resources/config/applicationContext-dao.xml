@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+http://www.springframework.org/schema/aop
+http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+http://www.springframework.org/schema/mvc
+http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+	<!--DBCP数据源 -->
+
+	<bean id="dataSource"
+		class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"
+		scope="singleton">
+		<property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://127.0.0.1:3306/db?characterEncoding=utf-8&amp;serverTimezone=UTC&amp;useSSL=false" />
+		<property name="username" value="root" />
+		<property name="password" value="root" />
+	</bean>
+
+<!--2.配置mybatis的SqlSession的工厂: SqlSessionFactoryBean dataSource:引用数据源 --><!-- 
+<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <property name="dataSource" ref="dataSource"></property>
+    <property name="configLocation" value="classpath:mybatis.xml"></property>
+    <property name="mapperLocations" value="classpath:com/hehui/dao/*.xml"></property>
+    <property name="typeAliasesPackage" value="com.hehui.model" />
+</bean> -->
+
+	<!--spring配置Mybatis -->
+	<!--MyBatis的SqlSession会话工厂 -->
+	<bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="mapperLocations" value="classpath:com/ysd/mapper/*mapper.xml"></property>
+	</bean>
+
+	<!--MyBatis映射文件扫描器 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.ysd.mapper" />
+		<!-- <property name="sqlSessionFactory" ref="sessionFactory"></property> -->
+		<property name="sqlSessionFactoryBeanName"
+			value="sessionFactory"></property>
+	</bean>
+
+</beans>
